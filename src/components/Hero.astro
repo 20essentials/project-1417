@@ -1,0 +1,494 @@
+---
+type CameraFilter = {
+  id: string;
+  label: string;
+  color: string;
+};
+
+const filters: CameraFilter[] = [
+  { id: 'filter-1', label: 'red', color: '#cc3838ad' },
+  { id: 'filter-2', label: 'cyan', color: '#0fbbbbad' },
+  { id: 'filter-3', label: 'green', color: '#8ddb18ad' },
+  { id: 'filter-4', label: 'violet', color: '#ee82eead' },
+  { id: 'filter-5', label: 'amber', color: '#b8870bad' },
+  { id: 'filter-6', label: 'none', color: '#ffffff00' }
+];
+
+const initialFilter = filters.at(-1)!;
+---
+
+<section class='camera' aria-label='Camera'>
+  <video class='camera__video' data-video autoplay playsinline muted></video>
+
+  <div
+    class='camera__tint'
+    data-tint
+    data-color={initialFilter.color}
+    aria-hidden='true'
+  >
+  </div>
+
+  <div class='camera__filters' role='group' aria-label='Color filters'>
+    {
+      filters.map((filter) => (
+        <button
+          type='button'
+          class:list={[
+            'camera__filter',
+            { 'is-active': filter.id === initialFilter.id }
+          ]}
+          style={`--filter-color: ${filter.color}`}
+          data-filter
+          data-color={filter.color}
+          aria-label={`Apply ${filter.label} filter`}
+          aria-pressed={filter.id === initialFilter.id}
+        />
+      ))
+    }
+  </div>
+
+  <time class='camera__timer' data-timer datetime='PT0S'>00:00:00</time>
+
+  <div class='camera__zoom' role='group' aria-label='Zoom controls'>
+    <button
+      type='button'
+      class='camera__zoom-button'
+      data-zoom-in
+      aria-label='Zoom in'
+    >
+      <svg viewBox='0 0 24 24' aria-hidden='true'>
+        <path d='M12 5v14M5 12h14'></path>
+      </svg>
+    </button>
+    <button
+      type='button'
+      class='camera__zoom-button'
+      data-zoom-out
+      aria-label='Zoom out'
+    >
+      <svg viewBox='0 0 24 24' aria-hidden='true'>
+        <path d='M5 12h14'></path>
+      </svg>
+    </button>
+  </div>
+
+  <div class='camera__actions'>
+    <button
+      type='button'
+      class='camera__action camera__record'
+      data-record
+      aria-label='Start recording'
+      aria-pressed='false'
+    >
+      <span aria-hidden='true'></span>
+    </button>
+    <button
+      type='button'
+      class='camera__action camera__capture'
+      data-capture
+      aria-label='Take photo'
+    >
+      <span aria-hidden='true'></span>
+    </button>
+  </div>
+</section>
+
+<style>
+  .camera {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    background-color: #000;
+    color: #fff;
+  }
+
+  .camera__video {
+    display: block;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    transform: scale(-1, 1);
+  }
+
+  .camera__tint {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    opacity: 0.25;
+    pointer-events: none;
+    background-color: transparent;
+  }
+
+  .camera__filters {
+    position: fixed;
+    z-index: 3;
+    top: 50%;
+    left: 5vw;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 1px;
+    background-color: #fff;
+    transform: translateY(-50%);
+  }
+
+  .camera__filter {
+    width: 70px;
+    height: 50px;
+    padding: 0;
+    border: 1px solid #000;
+    background-image: url('/assets/filter-preview.jpg');
+    background-color: var(--filter-color);
+    background-blend-mode: luminosity;
+    cursor: pointer;
+    transition: outline-color 150ms ease;
+    outline: 2px solid transparent;
+    outline-offset: 1px;
+  }
+
+  .camera__filter.is-active {
+    outline-color: #fff;
+  }
+
+  .camera__timer {
+    position: fixed;
+    z-index: 3;
+    top: 77vh;
+    left: 5vw;
+    display: none;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: #fff;
+  }
+
+  .camera__timer.is-visible {
+    display: block;
+  }
+
+  .camera__zoom {
+    position: fixed;
+    z-index: 3;
+    top: 15vh;
+    right: 7vw;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 6px;
+    background-color: rgba(61, 54, 54, 0.774);
+  }
+
+  .camera__zoom-button {
+    display: grid;
+    place-items: center;
+    padding: 7px;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .camera__zoom-button svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  .camera__actions {
+    position: fixed;
+    z-index: 3;
+    top: 50%;
+    right: 5vw;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transform: translateY(-50%);
+  }
+
+  .camera__action {
+    display: grid;
+    place-items: center;
+    width: 65px;
+    height: 65px;
+    padding: 0;
+    border: 5px solid #fff;
+    border-radius: 50%;
+    background-color: transparent;
+    cursor: pointer;
+  }
+
+  .camera__action span {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+  }
+
+  .camera__record span {
+    background-color: #e33;
+  }
+
+  .camera__capture span {
+    background-color: #d8d8d8;
+  }
+
+  .camera__record.is-recording span {
+    animation: buttonAnimation 0.75s infinite;
+  }
+
+  .camera__capture.is-capturing {
+    animation: buttonAnimation 0.5s 1;
+  }
+
+  @keyframes buttonAnimation {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(0.8);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+</style>
+
+<script>
+  import { $, $$ } from '@/utils/functions';
+
+  type StoreName = 'images' | 'videos';
+
+  interface MediaRecord {
+    mid: number;
+    media: string | Blob;
+  }
+
+  const DB_NAME = 'camera';
+  const DB_VERSION = 1;
+  const MIME_TYPES = ['video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
+  const ZOOM_STEP = 0.1;
+  const MIN_ZOOM = 0.5;
+  const MAX_ZOOM = 2;
+
+  const database = new Promise<IDBDatabase>((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () =>
+      reject(request.error ?? new Error('Unable to open database'));
+    request.onupgradeneeded = () => {
+      const db = request.result;
+
+      if (!db.objectStoreNames.contains('images')) {
+        db.createObjectStore('images', { keyPath: 'mid' });
+      }
+
+      if (!db.objectStoreNames.contains('videos')) {
+        db.createObjectStore('videos', { keyPath: 'mid' });
+      }
+    };
+  });
+
+  const saveMedia = async (store: StoreName, media: string | Blob) => {
+    try {
+      const db = await database;
+      const transaction = db.transaction(store, 'readwrite');
+      transaction.objectStore(store).add({ mid: Date.now(), media } satisfies MediaRecord);
+    } catch (error) {
+      console.error('Unable to save media', error);
+    }
+  };
+
+  const video = $<HTMLVideoElement>('[data-video]');
+  const tint = $<HTMLDivElement>('[data-tint]');
+  const timer = $<HTMLTimeElement>('[data-timer]');
+  const recordButton = $<HTMLButtonElement>('[data-record]');
+  const captureButton = $<HTMLButtonElement>('[data-capture]');
+  const zoomInButton = $<HTMLButtonElement>('[data-zoom-in]');
+  const zoomOutButton = $<HTMLButtonElement>('[data-zoom-out]');
+  const filterButtons = $$<HTMLButtonElement>('[data-filter]');
+
+  if (video && tint && timer && recordButton && captureButton) {
+    let stream: MediaStream | null = null;
+    let recorder: MediaRecorder | null = null;
+    let chunks: Blob[] = [];
+    let recording = false;
+    let elapsedSeconds = 0;
+    let timerId: number | undefined;
+    let zoom = 1;
+
+    const getMimeType = () => MIME_TYPES.find((type) => MediaRecorder.isTypeSupported(type));
+
+    const getExtension = (mimeType: string) =>
+      mimeType.startsWith('video/mp4') ? 'mp4' : 'webm';
+
+    const formatTime = (totalSeconds: number) => {
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      return [hours, minutes, seconds]
+        .map((value) => String(value).padStart(2, '0'))
+        .join(':');
+    };
+
+    const download = (href: string, filename: string) => {
+      const link = document.createElement('a');
+      link.href = href;
+      link.download = filename;
+      document.body.append(link);
+      link.click();
+      link.remove();
+    };
+
+    const startTimer = () => {
+      elapsedSeconds = 0;
+      timer.textContent = formatTime(elapsedSeconds);
+      timer.classList.add('is-visible');
+      timerId = window.setInterval(() => {
+        elapsedSeconds += 1;
+        timer.textContent = formatTime(elapsedSeconds);
+        timer.dateTime = `PT${elapsedSeconds}S`;
+      }, 1000);
+    };
+
+    const stopTimer = () => {
+      if (timerId !== undefined) {
+        window.clearInterval(timerId);
+        timerId = undefined;
+      }
+
+      timer.classList.remove('is-visible');
+      timer.textContent = '00:00:00';
+      timer.dateTime = 'PT0S';
+    };
+
+    const setRecording = (value: boolean) => {
+      recording = value;
+      recordButton.classList.toggle('is-recording', value);
+      recordButton.setAttribute('aria-pressed', String(value));
+      recordButton.setAttribute(
+        'aria-label',
+        value ? 'Stop recording' : 'Start recording'
+      );
+    };
+
+    const setZoom = (value: number) => {
+      zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Number(value.toFixed(1))));
+      video.style.transform = `scale(-${zoom}, ${zoom})`;
+    };
+
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((mediaStream) => {
+        stream = mediaStream;
+        video.srcObject = mediaStream;
+
+        const mimeType = getMimeType();
+        recorder = new MediaRecorder(
+          mediaStream,
+          mimeType ? { mimeType } : undefined
+        );
+
+        recorder.addEventListener('dataavailable', (event) => {
+          if (event.data.size > 0) {
+            chunks.push(event.data);
+          }
+        });
+
+        recorder.addEventListener('stop', () => {
+          if (!recorder) {
+            return;
+          }
+
+          const type = recorder.mimeType || 'video/webm';
+          const blob = new Blob(chunks, { type });
+          const url = URL.createObjectURL(blob);
+
+          download(url, `VID_${Date.now()}.${getExtension(type)}`);
+          void saveMedia('videos', blob);
+
+          window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+          chunks = [];
+        });
+      })
+      .catch((error) => console.error('Unable to access camera', error));
+
+    recordButton.addEventListener('click', () => {
+      if (!recorder) {
+        console.warn('Camera permission has not been granted');
+        return;
+      }
+
+      if (recording) {
+        recorder.stop();
+        setRecording(false);
+        stopTimer();
+        return;
+      }
+
+      recorder.start();
+      setRecording(true);
+      startTimer();
+    });
+
+    captureButton.addEventListener('click', () => {
+      if (!video.videoWidth || !video.videoHeight) {
+        console.warn('Camera is not ready');
+        return;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      const context = canvas.getContext('2d');
+
+      if (!context) {
+        return;
+      }
+
+      const { width, height } = canvas;
+
+      context.imageSmoothingQuality = 'high';
+      context.translate(width / 2, height / 2);
+      context.scale(-zoom, zoom);
+      context.drawImage(video, -width / 2, -height / 2, width, height);
+      context.setTransform(1, 0, 0, 1, 0, 0);
+      context.globalAlpha = 0.25;
+      context.fillStyle = tint.dataset.color ?? 'transparent';
+      context.fillRect(0, 0, width, height);
+
+      const dataUrl = canvas.toDataURL('image/png');
+
+      download(dataUrl, `IMG_${Date.now()}.png`);
+      void saveMedia('images', dataUrl);
+
+      captureButton.classList.add('is-capturing');
+      window.setTimeout(() => captureButton.classList.remove('is-capturing'), 500);
+    });
+
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const color = button.dataset.color ?? 'transparent';
+
+        filterButtons.forEach((filterButton) => {
+          const active = filterButton === button;
+          filterButton.classList.toggle('is-active', active);
+          filterButton.setAttribute('aria-pressed', String(active));
+        });
+
+        tint.dataset.color = color;
+        tint.style.backgroundColor = color;
+      });
+    });
+
+    zoomInButton?.addEventListener('click', () => setZoom(zoom + ZOOM_STEP));
+    zoomOutButton?.addEventListener('click', () => setZoom(zoom - ZOOM_STEP));
+
+    window.addEventListener('pagehide', () => {
+      stream?.getTracks().forEach((track) => track.stop());
+    });
+  }
+</script>
