@@ -30,7 +30,7 @@ const initialFilter = filters.at(-1)!;
 
   <div class='camera__filters' role='group' aria-label='Color filters'>
     {
-      filters.map((filter) => (
+      filters.map(filter => (
         <button
           type='button'
           class:list={[
@@ -294,7 +294,9 @@ const initialFilter = filters.at(-1)!;
     try {
       const db = await database;
       const transaction = db.transaction(store, 'readwrite');
-      transaction.objectStore(store).add({ mid: Date.now(), media } satisfies MediaRecord);
+      transaction
+        .objectStore(store)
+        .add({ mid: Date.now(), media } satisfies MediaRecord);
     } catch (error) {
       console.error('Unable to save media', error);
     }
@@ -318,7 +320,8 @@ const initialFilter = filters.at(-1)!;
     let timerId: number | undefined;
     let zoom = 1;
 
-    const getMimeType = () => MIME_TYPES.find((type) => MediaRecorder.isTypeSupported(type));
+    const getMimeType = () =>
+      MIME_TYPES.find(type => MediaRecorder.isTypeSupported(type));
 
     const getExtension = (mimeType: string) =>
       mimeType.startsWith('video/mp4') ? 'mp4' : 'webm';
@@ -329,7 +332,7 @@ const initialFilter = filters.at(-1)!;
       const seconds = totalSeconds % 60;
 
       return [hours, minutes, seconds]
-        .map((value) => String(value).padStart(2, '0'))
+        .map(value => String(value).padStart(2, '0'))
         .join(':');
     };
 
@@ -381,7 +384,7 @@ const initialFilter = filters.at(-1)!;
 
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
-      .then((mediaStream) => {
+      .then(mediaStream => {
         stream = mediaStream;
         video.srcObject = mediaStream;
 
@@ -391,7 +394,7 @@ const initialFilter = filters.at(-1)!;
           mimeType ? { mimeType } : undefined
         );
 
-        recorder.addEventListener('dataavailable', (event) => {
+        recorder.addEventListener('dataavailable', event => {
           if (event.data.size > 0) {
             chunks.push(event.data);
           }
@@ -413,7 +416,7 @@ const initialFilter = filters.at(-1)!;
           chunks = [];
         });
       })
-      .catch((error) => console.error('Unable to access camera', error));
+      .catch(error => console.error('Unable to access camera', error));
 
     recordButton.addEventListener('click', () => {
       if (!recorder) {
@@ -466,14 +469,17 @@ const initialFilter = filters.at(-1)!;
       void saveMedia('images', dataUrl);
 
       captureButton.classList.add('is-capturing');
-      window.setTimeout(() => captureButton.classList.remove('is-capturing'), 500);
+      window.setTimeout(
+        () => captureButton.classList.remove('is-capturing'),
+        500
+      );
     });
 
-    filterButtons.forEach((button) => {
+    filterButtons.forEach(button => {
       button.addEventListener('click', () => {
         const color = button.dataset.color ?? 'transparent';
 
-        filterButtons.forEach((filterButton) => {
+        filterButtons.forEach(filterButton => {
           const active = filterButton === button;
           filterButton.classList.toggle('is-active', active);
           filterButton.setAttribute('aria-pressed', String(active));
@@ -488,7 +494,7 @@ const initialFilter = filters.at(-1)!;
     zoomOutButton?.addEventListener('click', () => setZoom(zoom - ZOOM_STEP));
 
     window.addEventListener('pagehide', () => {
-      stream?.getTracks().forEach((track) => track.stop());
+      stream?.getTracks().forEach(track => track.stop());
     });
   }
 </script>
