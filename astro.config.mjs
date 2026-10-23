@@ -28,10 +28,10 @@ export default defineConfig({
       fallbacks: ['sans-serif']
     }
   ],
-  base: import.meta.env.DEV ? undefined : '/project-1020/',
+  base: import.meta.env.DEV ? undefined : '/project-1417/',
   site: import.meta.env.DEV
     ? 'http://localhost:4321/'
-    : 'https://20essentials.github.io/project-1020/',
+    : 'https://20essentials.github.io/project-1417/',
 
   integrations: [react()]
 });
